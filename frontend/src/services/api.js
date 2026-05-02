@@ -5,10 +5,9 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: false, // set true only if using cookies/sessions
+  withCredentials: false,
 });
 
-// Attach JWT token to every request if available
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -17,7 +16,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Global error handler
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -29,4 +27,8 @@ api.interceptors.response.use(
   }
 );
 
+export const authApi = api;
+export const contentApi = api;
+export const userApi = api;
+export const paymentApi = api;
 export default api;
