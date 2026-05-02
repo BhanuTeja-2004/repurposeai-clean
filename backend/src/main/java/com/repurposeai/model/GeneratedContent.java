@@ -1,9 +1,7 @@
 package com.repurposeai.model;
-
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,7 +10,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 public class GeneratedContent {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,7 +25,7 @@ public class GeneratedContent {
     @Column(name = "output_type", nullable = false)
     private OutputType outputType;
 
-    @Column(name = "output_text", columnDefinition = "LONGTEXT", nullable = false)
+    @Column(name = "output_text", columnDefinition = "TEXT", nullable = false)
     private String outputText;
 
     @Column(name = "tokens_used")
