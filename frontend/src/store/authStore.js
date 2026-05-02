@@ -10,7 +10,7 @@ const useAuthStore = create((set, get) => ({
   login: async (email, password) => {
     set({ isLoading: true });
     try {
-      const res = await api.login({ email, password });
+      const res = await api.post('/auth/login', { email, password });
       const { token, user } = res.data;
       localStorage.setItem('token', token);
       set({ token, user, isAuthenticated: true, isLoading: false });
@@ -24,7 +24,7 @@ const useAuthStore = create((set, get) => ({
   register: async (name, email, password) => {
     set({ isLoading: true });
     try {
-      const res = await api.post('/auth/login', { email, password });
+      const res = await api.post('/auth/register', { name, email, password });
       const { token, user } = res.data;
       localStorage.setItem('token', token);
       set({ token, user, isAuthenticated: true, isLoading: false });
