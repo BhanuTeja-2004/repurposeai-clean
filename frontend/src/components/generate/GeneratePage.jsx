@@ -54,7 +54,7 @@ export default function GeneratePage() {
     setIsLoading(true);
     setResult(null);
     try {
-      const res = await contentApi.post('/content/generate', {
+      const res = await contentApi.generate({
         inputText: inputText.trim(),
         outputType,
         tone,
@@ -82,9 +82,7 @@ export default function GeneratePage() {
   const handleDownload = async () => {
     if (!result?.id) return;
     try {
-      const res = await contentApi.get(`/content/${result.id}/download`, {
-        responseType: 'blob',
-      });
+      const res = await contentApi.download(result.id);
       const url = URL.createObjectURL(new Blob([res.data]));
       const a = document.createElement('a');
       a.href = url;

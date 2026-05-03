@@ -27,7 +27,7 @@ export default function App() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      userApi.get('/users/me')
+      userApi.getProfile()
         .then(res => setUser(res.data))
         .catch(() => {});
     }

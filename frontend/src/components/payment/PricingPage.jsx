@@ -62,7 +62,7 @@ export default function PricingPage() {
         return;
       }
 
-      const res = await paymentApi.post('/payment/create-order');
+      const res = await paymentApi.createOrder();
 
       const orderId  = res.data?.orderId;
       const amount   = res.data?.amount;
@@ -88,7 +88,7 @@ export default function PricingPage() {
         },
         handler: async (response) => {
           try {
-            await paymentApi.post('/payment/verify', {
+            await paymentApi.verifyPayment({
               razorpayOrderId:   response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
