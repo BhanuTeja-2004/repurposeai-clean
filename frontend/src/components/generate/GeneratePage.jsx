@@ -54,7 +54,11 @@ export default function GeneratePage() {
     setIsLoading(true);
     setResult(null);
     try {
-      const res = await contentApi.generate({ inputText: inputText.trim(), outputType, tone });
+      const res = await contentApi.post('/content/generate', {
+        inputText: inputText.trim(),
+        outputType,
+        tone,
+      });
       setResult(res.data);
       setUser({ ...user, dailyUsageCount: usedToday + 1 });
       toast.success('Content generated!');
@@ -78,23 +82,43 @@ export default function GeneratePage() {
   const handleDownload = async () => {
     if (!result?.id) return;
     try {
-      const res = await contentApi.download(result.id);
+      const res = await contentApi.get(`/content/${result.id}/download`, {
+        responseType: 'blob',
+      });
       const url = URL.createObjectURL(new Blob([res.data]));
       const a = document.createElement('a');
       a.href = url;
       a.download = outputType.toLowerCase() + '_' + result.id + '.txt';
       a.click();
       URL.revokeObjectURL(url);
-    } catch { toast.error('Download failed'); }
+    } catch {
+      toast.error('Download failed');
+    }
   };
 
   return (
-    <div style={{ padding: '32px', maxWidth: 900, margin: '0 auto' }}>
+    <div style={{
+      padding: 'clamp(16px, 4vw, 32px)',
+      maxWidth: 900,
+      margin: '0 auto',
+      boxSizing: 'border-box',
+    }}>
       {/* Header */}
-      <div style={{ marginBottom: 28, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+      <div style={{
+        marginBottom: 28,
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: 12,
+      }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 4 }}>Generate Content</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>Paste your content and transform it instantly.</p>
+          <h1 style={{ fontSize: 'clamp(18px, 3vw, 24px)', fontWeight: 600, marginBottom: 4 }}>
+            Generate Content
+          </h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
+            Paste your content and transform it instantly.
+          </p>
         </div>
         <div style={{
           background: 'var(--bg-card)', border: '1px solid var(--border)',
@@ -108,7 +132,13 @@ export default function GeneratePage() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+      {/* Format + Tone */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: 12,
+        marginBottom: 16,
+      }}>
         {/* Output type dropdown */}
         <div style={{ position: 'relative' }}>
           <label className="label">Output Format</label>
@@ -122,9 +152,14 @@ export default function GeneratePage() {
               fontSize: 14, transition: 'border-color 0.2s',
             }}
           >
-            {selectedType && React.createElement(selectedType.icon, { size: 16, color: selectedType.color, style: { flexShrink: 0 } })}
+            {selectedType && React.createElement(selectedType.icon, {
+              size: 16, color: selectedType.color, style: { flexShrink: 0 }
+            })}
             <span style={{ flex: 1, textAlign: 'left' }}>{selectedType?.label}</span>
-            <ChevronDown size={14} color="var(--text-muted)" style={{ transform: typeDropOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+            <ChevronDown size={14} color="var(--text-muted)" style={{
+              transform: typeDropOpen ? 'rotate(180deg)' : 'none',
+              transition: 'transform 0.2s',
+            }} />
           </button>
 
           {typeDropOpen && (
@@ -144,7 +179,8 @@ export default function GeneratePage() {
                     background: outputType === type.value ? 'var(--accent-light)' : 'transparent',
                     cursor: 'pointer',
                     color: outputType === type.value ? 'var(--accent)' : 'var(--text-primary)',
-                    fontSize: 14, transition: 'background 0.15s', borderBottom: '1px solid var(--border)',
+                    fontSize: 14, transition: 'background 0.15s',
+                    borderBottom: '1px solid var(--border)',
                   }}
                 >
                   {React.createElement(type.icon, { size: 15, color: type.color, style: { flexShrink: 0 } })}
@@ -168,7 +204,9 @@ export default function GeneratePage() {
             style={{ cursor: 'pointer' }}
           >
             {TONES.map(t => (
-              <option key={t.value} value={t.value} style={{ background: 'var(--bg-card)' }}>{t.label}</option>
+              <option key={t.value} value={t.value} style={{ background: 'var(--bg-card)' }}>
+                {t.label}
+              </option>
             ))}
           </select>
         </div>
@@ -178,7 +216,10 @@ export default function GeneratePage() {
       <div style={{ marginBottom: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
           <label className="label" style={{ margin: 0 }}>Your Content</label>
-          <span style={{ fontSize: 12, color: inputText.length > MAX_CHARS * 0.9 ? 'var(--warning)' : 'var(--text-muted)' }}>
+          <span style={{
+            fontSize: 12,
+            color: inputText.length > MAX_CHARS * 0.9 ? 'var(--warning)' : 'var(--text-muted)',
+          }}>
             {inputText.length.toLocaleString()} / {MAX_CHARS.toLocaleString()}
           </span>
         </div>
@@ -187,7 +228,13 @@ export default function GeneratePage() {
           placeholder="Paste your blog post, article, transcript, or video script here (min. 50 characters)..."
           value={inputText}
           onChange={e => setInputText(e.target.value.slice(0, MAX_CHARS))}
-          style={{ minHeight: 220, resize: 'vertical', lineHeight: 1.7, fontSize: 14, fontFamily: 'var(--font-body)' }}
+          style={{
+            minHeight: 'clamp(140px, 25vw, 220px)',
+            resize: 'vertical',
+            lineHeight: 1.7,
+            fontSize: 14,
+            fontFamily: 'var(--font-body)',
+          }}
         />
       </div>
 
@@ -208,7 +255,8 @@ export default function GeneratePage() {
           marginTop: 10, padding: '12px 16px',
           background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)',
           borderRadius: 'var(--radius)', fontSize: 13, color: 'var(--error)',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexWrap: 'wrap', gap: 8,
         }}>
           <span>Daily limit reached (3/3)</span>
           <Link to="/pricing" className="btn btn-primary" style={{ padding: '6px 14px', fontSize: 12 }}>
@@ -238,12 +286,15 @@ export default function GeneratePage() {
               {selectedType && React.createElement(selectedType.icon, { size: 16, color: selectedType.color })}
               <span style={{ fontWeight: 600, fontSize: 15 }}>{selectedType?.label}</span>
               {result.tokensUsed && (
-                <span style={{ fontSize: 11, color: 'var(--text-muted)', background: 'var(--bg-input)', padding: '2px 8px', borderRadius: 99 }}>
+                <span style={{
+                  fontSize: 11, color: 'var(--text-muted)',
+                  background: 'var(--bg-input)', padding: '2px 8px', borderRadius: 99,
+                }}>
                   {result.tokensUsed} tokens
                 </span>
               )}
             </div>
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               <button onClick={handleCopy} className="btn btn-secondary" style={{ padding: '7px 14px', fontSize: 13 }}>
                 {copied ? <><Check size={13} /> Copied!</> : <><Copy size={13} /> Copy</>}
               </button>
@@ -266,8 +317,10 @@ export default function GeneratePage() {
           {!isPro && typeof result.remainingGenerations === 'number' && (
             <div style={{
               marginTop: 16, padding: '10px 14px',
-              background: result.remainingGenerations === 0 ? 'rgba(248,113,113,0.08)' : 'var(--accent-light)',
-              border: '1px solid ' + (result.remainingGenerations === 0 ? 'rgba(248,113,113,0.2)' : 'rgba(124,109,250,0.2)'),
+              background: result.remainingGenerations === 0
+                ? 'rgba(248,113,113,0.08)' : 'var(--accent-light)',
+              border: '1px solid ' + (result.remainingGenerations === 0
+                ? 'rgba(248,113,113,0.2)' : 'rgba(124,109,250,0.2)'),
               borderRadius: 'var(--radius)', fontSize: 13,
               color: result.remainingGenerations === 0 ? 'var(--error)' : 'var(--accent)',
             }}>
