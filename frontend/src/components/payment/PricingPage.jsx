@@ -62,7 +62,7 @@ export default function PricingPage() {
         return;
       }
 
-      const res = await paymentApi.post('/payments/create-order');
+      const res = await paymentApi.post('/payment/create-order');
 
       const orderId  = res.data?.orderId;
       const amount   = res.data?.amount;
@@ -88,7 +88,7 @@ export default function PricingPage() {
         },
         handler: async (response) => {
           try {
-            await paymentApi.post('/payments/verify', {
+            await paymentApi.post('/payment/verify', {
               razorpayOrderId:   response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
@@ -128,7 +128,6 @@ export default function PricingPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', padding: '0 24px' }}>
-      {/* Nav */}
       <nav style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '20px 24px', borderBottom: '1px solid var(--border)',
@@ -179,7 +178,6 @@ export default function PricingPage() {
                 Forever free, no card needed
               </p>
             </div>
-
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
               {FREE_FEATURES.map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
@@ -188,7 +186,6 @@ export default function PricingPage() {
                 </div>
               ))}
             </div>
-
             <Link
               to="/register"
               className="btn btn-secondary"
@@ -213,7 +210,6 @@ export default function PricingPage() {
             }}>
               Most Popular
             </div>
-
             <div style={{ marginBottom: 24 }}>
               <p style={{
                 fontSize: 13, color: 'var(--accent)',
@@ -227,7 +223,6 @@ export default function PricingPage() {
                 Unlimited everything
               </p>
             </div>
-
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
               {PRO_FEATURES.map(f => (
                 <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
@@ -236,7 +231,6 @@ export default function PricingPage() {
                 </div>
               ))}
             </div>
-
             <button
               onClick={handleUpgrade}
               disabled={isLoading || user?.plan === 'PRO'}

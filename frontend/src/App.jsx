@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import useAuthStore from './store/authStore';
 import { userApi } from './services/api';
-// Pages
 import LandingPage from './components/LandingPage';
 import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
@@ -28,7 +27,7 @@ export default function App() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      userApi.get('/users/profile')
+      userApi.get('/users/me')
         .then(res => setUser(res.data))
         .catch(() => {});
     }
