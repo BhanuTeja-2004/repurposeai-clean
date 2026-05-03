@@ -42,10 +42,8 @@ public class ContentService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        // Reset daily count if it's a new day
         resetDailyCountIfNeeded(user);
 
-        // Check usage limits
         int limit = user.getPlan() == User.Plan.PRO ? proDailyLimit : freeDailyLimit;
         if (user.getDailyUsageCount() >= limit) {
             throw new UsageLimitExceededException(
@@ -55,14 +53,12 @@ public class ContentService {
             );
         }
 
-        // Generate content via AI
         OpenAiService.AiResult aiResult = openAiService.generateContent(
                 request.getInputText(),
                 request.getOutputType(),
                 request.getTone()
         );
 
-        // Save to database
         GeneratedContent content = GeneratedContent.builder()
                 .user(user)
                 .inputText(request.getInputText())
@@ -74,7 +70,6 @@ public class ContentService {
 
         content = contentRepository.save(content);
 
-        // Update user counters
         user.setDailyUsageCount(user.getDailyUsageCount() + 1);
         user.setTotalGenerations(user.getTotalGenerations() + 1);
         userRepository.save(user);
@@ -101,6 +96,7 @@ public class ContentService {
         return contentPage.map(ContentHistoryResponse::fromContent);
     }
 
+    @Transactional
     public GeneratedContent getContentById(String userEmail, Long contentId) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -113,6 +109,12 @@ public class ContentService {
         }
 
         return content;
+    }
+
+    @Transactional
+    public ContentHistoryResponse getContentByIdAsDto(String userEmail, Long contentId) {
+        GeneratedContent content = getContentById(userEmail, contentId);
+        return ContentHistoryResponse.fromContent(content);
     }
 
     @Transactional
@@ -167,7 +169,6 @@ public class ContentService {
         }
     }
 
-    // Runs every day at midnight to reset usage counts
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void resetAllDailyUsageCounts() {

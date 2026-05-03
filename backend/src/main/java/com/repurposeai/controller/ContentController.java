@@ -42,11 +42,12 @@ public class ContentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GeneratedContent> getById(
+    public ResponseEntity<ContentHistoryResponse> getById(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long id) {
 
-        GeneratedContent content = contentService.getContentById(userDetails.getUsername(), id);
+        ContentHistoryResponse content = contentService.getContentByIdAsDto(
+                userDetails.getUsername(), id);
         return ResponseEntity.ok(content);
     }
 
@@ -64,7 +65,8 @@ public class ContentController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long id) {
 
-        GeneratedContent content = contentService.getContentById(userDetails.getUsername(), id);
+        GeneratedContent content = contentService.getContentById(
+                userDetails.getUsername(), id);
 
         String filename = content.getOutputType().name().toLowerCase() + "_" + id + ".txt";
         byte[] bytes = content.getOutputText().getBytes(StandardCharsets.UTF_8);
