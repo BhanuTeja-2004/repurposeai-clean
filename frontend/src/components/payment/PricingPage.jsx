@@ -62,23 +62,13 @@ export default function PricingPage() {
         return;
       }
 
-      const res = await paymentApi.createOrder();
+      const res = await paymentApi.post('/payments/create-order');
 
-      // ── DEBUG: remove these after confirming it works ──
-      console.log("FULL RES:", res);
-      console.log("RES.DATA:", res.data);
-      console.log("orderId:", res.data?.orderId);
-      console.log("amount:", res.data?.amount);
-      console.log("currency:", res.data?.currency);
-      console.log("key:", res.data?.key);
-      // ──────────────────────────────────────────────────
+      const orderId  = res.data?.orderId;
+      const amount   = res.data?.amount;
+      const currency = res.data?.currency;
+      const key      = res.data?.key;
 
-      const orderId   = res.data?.orderId;
-      const amount    = res.data?.amount;
-      const currency  = res.data?.currency;
-      const key       = res.data?.key;
-
-      // Guard: if key is missing, show a clear error instead of opening broken popup
       if (!key || !orderId) {
         console.error("Missing key or orderId from backend:", { key, orderId });
         toast.error('Payment setup failed. Please contact support.');
@@ -87,18 +77,18 @@ export default function PricingPage() {
       }
 
       const options = {
-        key:         key,
-        amount:      amount,
-        currency:    currency,
-        name:        'RepurposeAI',
+        key,
+        amount,
+        currency,
+        name: 'RepurposeAI',
         description: 'Pro Plan – ₹99/month',
-        order_id:    orderId,
+        order_id: orderId,
         prefill: {
           email: user?.email || '',
         },
         handler: async (response) => {
           try {
-            await paymentApi.verifyPayment({
+            await paymentApi.post('/payments/verify', {
               razorpayOrderId:   response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
