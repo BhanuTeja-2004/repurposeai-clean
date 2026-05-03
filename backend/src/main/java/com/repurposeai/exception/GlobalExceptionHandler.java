@@ -58,8 +58,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneral(Exception ex) {
+        ex.printStackTrace();
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error",
-                "An unexpected error occurred. Please try again.");
+                ex.getClass().getName() + ": " + ex.getMessage());
     }
 
     private ResponseEntity<ApiError> build(HttpStatus status, String error, String message) {
