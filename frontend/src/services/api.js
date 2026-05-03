@@ -24,28 +24,28 @@ api.interceptors.response.use(
 );
 
 export const authApi = {
-  login: (data) => api["post"]("/auth/login", data),
-  register: (data) => api["post"]("/auth/register", data),
+  login: (data) => api["post"]("/api/auth/login", data),
+  register: (data) => api["post"]("/api/auth/register", data),
 };
 
 export const contentApi = {
-  generate: (data) => api["post"]("/content/generate", data),
-  getHistory: (page, size) => api["get"]("/content/history?page=" + (page||0) + "&size=" + (size||10)),
-  getById: (id) => api["get"]("/content/" + id),
-  delete: (id) => api["delete"]("/content/" + id),
-  getDashboard: () => api["get"]("/content/dashboard"),
-  download: (id) => api["get"]("/content/" + id + "/download", { responseType: "blob" }),
-  getOutputTypes: () => api["get"]("/content/output-types"),
+  generate: (data) => api["post"]("/api/content/generate", data),
+  getHistory: (page, size) => api["get"]("/api/content/history?page=" + (page||0) + "&size=" + (size||10)),
+  getById: (id) => api["get"]("/api/content/" + id),
+  delete: (id) => api["delete"]("/api/content/" + id),
+  getDashboard: () => api["get"]("/api/content/dashboard"),
+  download: (id) => api["get"]("/api/content/" + id + "/download", { responseType: "blob" }),
+  getOutputTypes: () => api["get"]("/api/content/output-types"),
 };
 
 export const userApi = {
-  getProfile: () => api["get"]("/users/me"),
-  updateName: (name) => api["put"]("/users/me/name", { name }),
+  getProfile: () => api["get"]("/api/users/me"),
+  updateName: (name) => api["put"]("/api/users/me/name", { name }),
 };
 
 export const paymentApi = {
-  createOrder: () => api["post"]("/payment/create-order"),
-  verifyPayment: (data) => api["post"]("/payment/verify", data),
+  createOrder: () => api["post"]("/api/payment/create-order"),
+  verifyPayment: (data) => api["post"]("/api/payment/verify", data),
 };
 
 export default api;
