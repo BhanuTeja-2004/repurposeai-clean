@@ -17,13 +17,14 @@ public class OpenAiService {
 
     private static final Logger logger = LoggerFactory.getLogger(OpenAiService.class);
 
-    // OpenRouter config
     @Value("${openrouter.api.url:https://openrouter.ai/api/v1/chat/completions}")
     private String apiUrl;
 
-    // ✅ WORKING MODEL
     @Value("${openrouter.model:meta-llama/llama-3-8b-instruct}")
     private String model;
+
+    @Value("${OPENROUTER_API_KEY:}")
+    private String openRouterApiKey;
 
     private final WebClient webClient;
 
@@ -50,13 +51,10 @@ public class OpenAiService {
         try {
             Map<String, Object> response = webClient.post()
                     .uri(apiUrl)
-                    .header("Authorization", "Bearer " + System.getenv("OPENROUTER_API_KEY"))
+                    .header("Authorization", "Bearer " + openRouterApiKey)
                     .header("Content-Type", "application/json")
-                    
-                    // ✅ IMPORTANT HEADERS (fixes your error)
-                    .header("HTTP-Referer", "http://localhost:5173")
+                    .header("HTTP-Referer", "https://repurposeai.in")
                     .header("X-Title", "RepurposeAI")
-
                     .bodyValue(requestBody)
                     .retrieve()
                     .onStatus(HttpStatusCode::isError, clientResponse ->
